@@ -1,6 +1,6 @@
 import { doc, getDoc, updateDoc ,addDoc, collection, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
 import React, { useEffect, useLayoutEffect, useState } from 'react';
-import { ActivityIndicator, ImageBackground, KeyboardAvoidingView, Platform, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, TouchableOpacity } from 'react-native';
 import { View ,Text,StyleSheet} from 'react-native';
 import { ScrollView, TextInput } from 'react-native-gesture-handler';
 
@@ -11,22 +11,21 @@ import * as ImagePicker from 'expo-image-picker';
 import { ref,getDownloadURL, uploadBytesResumable } from 'firebase/storage';
 import { auth, database, storage } from '../config/firebase';
 import { Image } from 'react-native';
+import { ImageBackground } from 'react-native';
 
 
-
-function ChatMain ({route}) {
+function PrivateChatMain ({route}) {
     const image = {uri: 'https://legacy.reactjs.org/logo-og.png'};
-    const { room } = route.params;
+    const { friend } = route.params;
     const [isloading,setIsloading] = useState(true);
     const [message,setMessage] = useState('');
     const [messages,setMessages] = useState('')
     const [email,setEmail] = useState('')
     const [username, setUsername] = useState("")
-    const [userdetail,setUserdetail] = useState("")
     // const token = AsyncStorage.getItem('authUser');
     // const user = JSON.parse(token)
     
-    console.log("Room :",room)
+    console.log("Room :",friend)
     console.log("################",username)
     const scrollViewRef = useRef(null);
     const sendMessage = async() => {
@@ -34,19 +33,17 @@ function ChatMain ({route}) {
         const token = await AsyncStorage.getItem('authUser');
         const user = JSON.parse(token)
         const id = `${Date.now()}`
-        
         const _doc = {
             _id: id,
-            roomId: room._id,
+            roomId: friend._id,
             timeStamp: timeStamp,
             message: message,
             user: user.providerData[0],
-            userName: username,
-            userDetail: userdetail,
+            userName: username
         }
         if (message !== ""){
             setMessage("")
-            await addDoc(collection(doc(database, "chats",room._id),"messages"),_doc)
+            await addDoc(collection(doc(database, "friends",friend._id),"messages"),_doc)
             .then(()=>{})
             .catch((err)=> alert(err))
         }
@@ -105,14 +102,13 @@ function ChatMain ({route}) {
         const id = `${Date.now()}`
         const _doc = {
             _id: id,
-            roomId: room._id,
+            roomId: friend._id,
             timeStamp: timeStamp,
             photo: url,
             user: user.providerData[0],
-            userName: username,
-            userDetail: userdetail
+            userName: username
         }
-        await addDoc(collection(doc(database, "chats",room._id),"messages"),_doc)
+        await addDoc(collection(doc(database, "friends",friend._id),"messages"),_doc)
         .then(()=>{
             console.log("pics sended")
         })
@@ -145,7 +141,6 @@ function ChatMain ({route}) {
                     const userdata = doc.data();
                     console.log(userdata)
                     setUsername(userdata.username)
-                    setUserdetail(userdata)
                 }
             })
             .catch((error)=>{
@@ -160,7 +155,7 @@ function ChatMain ({route}) {
           
         
         const msgQuery = query(
-            collection(database,"chats",room?._id,"messages"),
+            collection(database,"friends",friend?._id,"messages"),
             orderBy("timeStamp","asc")
         )
         const unsubscribe = onSnapshot(msgQuery,(querySnap)=>{
@@ -185,28 +180,28 @@ function ChatMain ({route}) {
         
         
     },[messages])
-    
     return (
-        <View style={{height:"100%",flex:1,paddingTop:"8%"}}>
+        <View style={{flex:1,paddingTop:"8%",height:"100%"}}>
             <ImageBackground
                 source={image}
-                style={{flex:1,justifyContent:'center'}}
+                style={{flex:1,justifyContent:'center'
+            }}
             >
                 <View style={{height:"10%"}}>
-                    <TouchableOpacity style ={{backgroundColor: 'gray',flex:1,alignItems:'center'}}>
+                    <TouchableOpacity style ={{backgroundColor: '#cec8db',flex:1,alignItems:'center'}}>
                         <Text style={{fontSize: 15,fontWeight:'bold'}}>
-                            {room.chatName.length > 16 ? `${room.chatName.slice(0, 16)}..` :room.chatName}
+                            {friend.friendDetail.username.length > 16 ? `${friend.friendDetail.username.slice(0, 16)}..` :friend.friendDetail.username}
                         </Text>
                         <Text>
                             Online
                         </Text>
                     </TouchableOpacity>
                 </View>
-                    
+                
                 <View style={{height:"92%"}}>
                     {/* <KeyboardAvoidingView style={{flex:1}} behavior={Platform.OS === 'ios'? 'padding':'height'} keyboardVerticalOffset={160}> */}
                         <>
-                            <ScrollView ref={scrollViewRef} onLayout={scrollToBottom}   contentContainerStyle={{flexGrow:1}} bounces={false}>
+                            <ScrollView ref={scrollViewRef} onLayout={scrollToBottom}  contentContainerStyle={{flexGrow:1}} bounces={false}>
                                 {isloading ? (<>
                                     <View>
                                         <ActivityIndicator/>
@@ -215,24 +210,20 @@ function ChatMain ({route}) {
                                     <>
                                         {messages?.map((msg,i)=> msg.user.email === email ? (<>
                                             <View key={i} style={{padding:5,opacity:.9}}>
-                                                <View style={{alignSelf:'flex-end'}}>
-                                                    <Image source={{ uri: msg.userDetail.profilePicUrl }} style={{ width: 30, height: 30,borderRadius:99, alignSelf:'flex-end'}}/>
-                                                    <View style={{alignSelf: 'flex-end',padding:20,backgroundColor:"#9e6a6a",borderRadius:16,paddingRight:"20"}}>
-                                                        <Text style={{fontSize: 15,fontWeight:'bold'}}>
-                                                            {msg.userName}
-                                                        </Text>
-                                                        {
-                                                            msg.photo  && <Image source={{ uri: msg.photo }} style={{ width: 200, height: 200 }} />
-                                                        }
-                                                        <Text style={{fontSize: 13,alignSelf:'flex-end',color:'white'}}>
-                                                            {msg.message}
-                                                        </Text>
-                                                    </View>
+                                                <View style={{alignSelf: 'flex-end',padding:20,backgroundColor:"#9e6a6a",borderRadius:16}}>
+                                                    <Text style={{fontSize: 15,fontWeight:'bold'}}>
+                                                        {msg.userName}
+                                                    </Text>
+                                                    {
+                                                        msg.photo  && <Image source={{ uri: msg.photo }} style={{ width: 200, height: 200 }} />
+                                                    }
+                                                    <Text style={{fontSize: 13,alignSelf:'flex-end'}}>
+                                                        {msg.message}
+                                                    </Text>
                                                 </View>
-                                                    
                                                 <View style={{alignSelf:"flex-end"}}>
                                                     {msg?.timeStamp?.seconds &&(
-                                                        <Text style={{color:"white"}}>
+                                                        <Text>
                                                             {new Date(
                                                                 parseInt(msg?.timeStamp?.seconds)*1000
                                                             ).toLocaleTimeString("en-US",{
@@ -259,7 +250,7 @@ function ChatMain ({route}) {
                                                 </View>
                                                 <View style={{alignSelf:"flex-start"}}>
                                                     {msg?.timeStamp?.seconds &&(
-                                                        <Text style={{color:"white"}}>
+                                                        <Text>
                                                             {new Date(
                                                                 parseInt(msg?.timeStamp?.seconds)*1000
                                                             ).toLocaleTimeString("en-US",{
@@ -276,7 +267,7 @@ function ChatMain ({route}) {
                                     </>
                                 ) }
                             </ScrollView>
-                            <View style = {{flexDirection: 'row',padding:10,backgroundColor:"gray"}}>
+                            <View style = {{flexDirection: 'row',padding:"3%",backgroundColor:"#cec8db"}}>
                                 <View>
                                 <TextInput
                                     placeholder="Type here .kk..."
@@ -285,12 +276,12 @@ function ChatMain ({route}) {
                                     style = {styles.input}
                                 />
                                 </View>
-                                <View style={{paddingLeft:20}}>
+                                <View style={{paddingLeft:"5%"}}>
                                     <TouchableOpacity onPress={addImage}>
                                         <FontAwesome name="camera" size={35} color="black" />
                                     </TouchableOpacity>
                                 </View>
-                                <View style={{paddingLeft:20}}>
+                                <View style={{paddingLeft:"5%"}}>
                                     <TouchableOpacity onPress={sendMessage}>
                                         <FontAwesome name="send" size={35} color="black" />
                                     </TouchableOpacity>
@@ -307,7 +298,7 @@ function ChatMain ({route}) {
     );
 }
 
-export default ChatMain;
+export default PrivateChatMain;
 
 const styles = StyleSheet.create({
     container: {

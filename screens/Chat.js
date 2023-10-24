@@ -26,8 +26,8 @@ function Chat() {
 
   
   return (
-    <SafeAreaView>
-      <View style = {{backgroundColor: '#60708f',padding:10,flexDirection: 'row',justifyContent:'space-between'}}>
+    <SafeAreaView style={{flex:1,paddingTop:"8%"}}>
+      <View style = {{backgroundColor: '#cec8db',padding:10,flexDirection: 'row',justifyContent:'space-between'}}>
         <Text style={{fontSize:30,fontWeight:'bold'}}>
           Messages
         </Text>
@@ -67,7 +67,7 @@ const MessageCard = ({room}) => {
   const navigation = useNavigation();
   return (
     <TouchableOpacity style={{paddingTop:2,backgroundColor:"#0a0a0a",width:"100%"}}  onPress={()=> navigation.navigate('ChatMain',{room: room})}>
-     <View style = {{backgroundColor: '#a16d64',padding: 10}}>
+     <View style = {{backgroundColor: '#c9c6cf',padding: 10}}>
        <Text style={{fontSize: 15,fontWeight:'bold'}}>{room.chatName}</Text>
        <Text>hai message from someone</Text>
  

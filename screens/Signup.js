@@ -37,7 +37,7 @@ const Signup  = () => { // Add navigation prop
                 setUsername[usname]
                 const userData = {
                   username: usname,
-                  profilePicUrl: profileImage,
+                  profilePicUrl: "https://firebasestorage.googleapis.com/v0/b/chatapp-guru.appspot.com/o/Profile%2FAxYrE8G30YVjWXKtH7X3UNageqE2?alt=media&token=1cd72df4-a074-4a45-a7c8-70626ea4b6fd",
                   bio: 'I am using Chatguru :)'
                 }
                 console.log(usname)
@@ -54,6 +54,7 @@ const Signup  = () => { // Add navigation prop
       username,
       profilePicUrl,
       bio,
+      userUid,
     }
     
     setDoc(userRef,userData)

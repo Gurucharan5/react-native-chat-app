@@ -15,6 +15,10 @@ import Profile from './screens/Profile';
 import { auth } from './config/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import AddUser from './screens/AddUser';
+import SearchProfile from './screens/SearchProfile';
+import PrivateChat from './screens/PrivateChat';
+import PrivateChatMain from './screens/PrivateChatMain';
 
 
 
@@ -64,10 +68,14 @@ function ChatStack () {
   return (
     <Stack.Navigator>
       <Stack.Screen name='Home' component={Home} options={{ headerShown: false }}/>
-      <Stack.Screen name="Chat" component={Chat}  />
+      <Stack.Screen name="Chat" component={Chat} options={{ headerShown: false }} />
       <Stack.Screen name="CreateChat" component={CreateChat} />
-      <Stack.Screen name='ChatMain' component={ChatMain} />
+      <Stack.Screen name='ChatMain' component={ChatMain} options={{ headerShown: false }}/>
       <Stack.Screen name='Profile' component={Profile} />
+      <Stack.Screen name='AddUser' component={AddUser} />
+      <Stack.Screen name='SearchProfile' component={SearchProfile} />
+      <Stack.Screen name='PrivateChat' component={PrivateChat}  options={{ headerShown: false }}/>
+      <Stack.Screen name='PrivateChatMain' component={PrivateChatMain} options={{ headerShown: false }} />
     </Stack.Navigator>
   )
 }
